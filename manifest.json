@@ -78,7 +78,7 @@
     {
       "ruleId": "geh-bangou-range-hyphen",
       "nameJa": "数値範囲のハイフン使用検出",
-      "descriptionJa": "横組での数値・ページ範囲の表記には全角ダーシ「—」または波形「〜」を使用します。半角ハイフン「-」で数値範囲を示している箇所を検出します。",
+      "descriptionJa": "横組での数値・ページ範囲の表記には二分ダーシ（—）を原則とし、波形「〜」も代替として認められます（書籍原則）。半角ハイフン「-」で数値範囲を示している箇所を検出します。",
       "guidelineId": "genkou-henshu-2",
       "level": "L1",
       "defaultConfig": { "enabled": true, "severity": "warning" },
@@ -114,6 +114,20 @@
       "docs": {
         "positiveExample": "許可しないことがある。",
         "negativeExample": "許可しない事がある。",
+        "sourceReference": "原稿編集 第2版（日本エディタースクール）E 表記の整理 b) 表記整理の具体的事項 6 仮名書きが望ましい語"
+      }
+    },
+    {
+      "ruleId": "geh-hojo-verb-l2",
+      "nameJa": "補助動詞の仮名書き検出（形態素解析）",
+      "descriptionJa": "「ていく（行く）」「てくる（来る）」「ておく（置く）」「てみる（見る）」「てしまう（仕舞う）」「てあげる（上げる）」「ていただく（頂く）」のように、接続助詞「て/で」の後に続く補助動詞が漢字で書かれている箇所を検出し、仮名書きを推奨します。",
+      "guidelineId": "genkou-henshu-2",
+      "level": "L2",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["official", "academic"],
+      "docs": {
+        "positiveExample": "負担が増えていく。",
+        "negativeExample": "負担が増えて行く。",
         "sourceReference": "原稿編集 第2版（日本エディタースクール）E 表記の整理 b) 表記整理の具体的事項 6 仮名書きが望ましい語"
       }
     },

@@ -19,6 +19,7 @@ import { createGehBangouRangeHyphen } from "./rules/geh-bangou-range-hyphen";
 import { createGehGaisuuArabic } from "./rules/geh-gaisuu-arabic";
 import { createGehHojoKanji } from "./rules/geh-hojo-kanji";
 import { createGehBracketMismatch, createGehNijuuBracketMismatch } from "./rules/geh-bracket-mismatch";
+import { createGehHojoVerbL2 } from "./rules/geh-hojo-verb-l2";
 
 const manifest = manifestJson as RulesetModule["manifest"];
 
@@ -33,6 +34,7 @@ const ruleset: RulesetModule = {
       createGehBangouRangeHyphen(ctx, manifest),
       createGehGaisuuArabic(ctx, manifest),
       createGehHojoKanji(ctx, manifest),
+      createGehHojoVerbL2(ctx, manifest),
       createGehBracketMismatch(ctx, manifest),
       createGehNijuuBracketMismatch(ctx, manifest),
     ];

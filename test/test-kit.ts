@@ -73,7 +73,19 @@ abstract class AbstractL1Rule extends AbstractLintRule {
 }
 
 // Other base classes are stubbed; extend as needed for L2/document rules.
+// L2 rules set their own properties as class field declarations; the base class
+// provides no-arg super() so subclasses can use their own field initializers.
 abstract class AbstractMorphologicalLintRule extends AbstractLintRule {
+  // Subclass must declare these as class fields (readonly id = ..., etc.)
+  declare readonly id: string;
+  declare readonly name: string;
+  declare readonly nameJa: string;
+  declare readonly description: string;
+  declare readonly descriptionJa: string;
+  readonly level = "L2" as const;
+  declare readonly defaultConfig: LintRuleConfig;
+  engine: "regex" | "morphological" = "morphological";
+
   abstract lintWithTokens(
     text: string,
     tokens: ReadonlyArray<Token>,
@@ -278,3 +290,61 @@ export function createTestContext(dictState: GenjiHealthState = "ready"): Rulese
 }
 
 export const CONFIG = { enabled: true, severity: "warning" as Severity };
+
+// ---------------------------------------------------------------------------
+// lintText — dispatches to lintWithTokens for L2 rules using hand-built tokens
+// ---------------------------------------------------------------------------
+
+/**
+ * Convenience dispatcher that calls lint() for L1 rules.
+ * For L2 (morphological) rules, it generates a simple token sequence from the
+ * text so golden tests can exercise lintWithTokens without a kuromoji runtime.
+ *
+ * The token generator is intentionally minimal: it only covers the patterns
+ * needed for golden-example coverage of geh-hojo-verb-l2.
+ * Rule-specific L2 tests should pass their own hand-crafted token arrays to
+ * lintWithTokens directly.
+ */
+export function lintText(
+  rule: { level?: string; lint: (t: string, c: LintRuleConfig) => LintIssue[]; lintWithTokens?: (t: string, tokens: ReadonlyArray<Token>, c: LintRuleConfig) => LintIssue[] },
+  text: string,
+  config: LintRuleConfig,
+): LintIssue[] {
+  if (rule.level === "L2" && typeof rule.lintWithTokens === "function") {
+    return rule.lintWithTokens(text, simpleTokenize(text), config);
+  }
+  return rule.lint(text, config);
+}
+
+/**
+ * Naive character-by-character tokenizer that emits a single token per
+ * recognisable morpheme in a small set of test sentences. Not intended
+ * for production or linguistic correctness — only enough for golden tests.
+ */
+function simpleTokenize(text: string): Token[] {
+  // Pre-built token sequences for the golden examples of geh-hojo-verb-l2.
+  // Positive: 「負担が増えていく。」 — no kanji auxiliary
+  // Negative: 「負担が増えて行く。」 — 行く is kanji auxiliary after て
+  if (text === "負担が増えて行く。") {
+    return [
+      { surface: "負担", pos: "名詞", start: 0, end: 2 },
+      { surface: "が", pos: "助詞", pos_detail_1: "格助詞", start: 2, end: 3 },
+      { surface: "増え", pos: "動詞", basic_form: "増える", conjugation_form: "連用形", start: 3, end: 5 },
+      { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start: 5, end: 6 },
+      { surface: "行く", pos: "動詞", basic_form: "行く", start: 6, end: 8 },
+      { surface: "。", pos: "記号", start: 8, end: 9 },
+    ];
+  }
+  if (text === "負担が増えていく。") {
+    return [
+      { surface: "負担", pos: "名詞", start: 0, end: 2 },
+      { surface: "が", pos: "助詞", pos_detail_1: "格助詞", start: 2, end: 3 },
+      { surface: "増え", pos: "動詞", basic_form: "増える", conjugation_form: "連用形", start: 3, end: 5 },
+      { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start: 5, end: 6 },
+      { surface: "いく", pos: "動詞", basic_form: "いく", start: 6, end: 8 },
+      { surface: "。", pos: "記号", start: 8, end: 9 },
+    ];
+  }
+  // Fallback: return a single token for the whole text
+  return [{ surface: text, pos: "名詞", start: 0, end: text.length }];
+}

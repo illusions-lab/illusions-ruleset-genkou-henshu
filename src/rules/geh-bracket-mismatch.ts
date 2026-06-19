@@ -56,26 +56,27 @@ export function createGehBracketMismatch(ctx: RulesetContext, manifest: RulesetM
       const issues: LintIssue[] = [];
 
       if (openCount > closeCount) {
-        // 開き括弧が多い: 最後の開き括弧の位置に警告（閉じ忘れの可能性）
-        let depth = 0;
-        let lastUnclosedIndex = -1;
+        // 開き括弧が多い: スタックを使って実際の未閉括弧の先頭位置を報告する。
+        // 最後の開き括弧ではなく、閉じられなかった最初の開き括弧位置を報告することで
+        // 執筆者が問題箇所を特定しやすくする。
+        const stack: number[] = [];
         for (let i = 0; i < text.length; i++) {
           if (text[i] === "「") {
-            depth++;
-            lastUnclosedIndex = i;
+            stack.push(i);
           } else if (text[i] === "」") {
-            depth--;
+            stack.pop();
           }
         }
-        if (depth > 0 && lastUnclosedIndex >= 0) {
+        if (stack.length > 0) {
+          const firstUnclosedIndex = stack[0];
           issues.push({
             ruleId: this.id,
             severity: config.severity,
             message: "Opening 「 bracket without matching 」",
             messageJa:
               "原稿編集 第2版に基づき、括弧類は起こしと受けが対応していることを確認してください。「 の閉じ忘れが疑われます。",
-            from: lastUnclosedIndex,
-            to: lastUnclosedIndex + 1,
+            from: firstUnclosedIndex,
+            to: firstUnclosedIndex + 1,
             originalText: "「",
             reference: REF,
           });
@@ -146,25 +147,25 @@ export function createGehNijuuBracketMismatch(
       const issues: LintIssue[] = [];
 
       if (openCount > closeCount) {
-        let depth = 0;
-        let lastUnclosedIndex = -1;
+        // スタックを使って未閉括弧の先頭位置を正確に報告する。
+        const stack: number[] = [];
         for (let i = 0; i < text.length; i++) {
           if (text[i] === "『") {
-            depth++;
-            lastUnclosedIndex = i;
+            stack.push(i);
           } else if (text[i] === "』") {
-            depth--;
+            stack.pop();
           }
         }
-        if (depth > 0 && lastUnclosedIndex >= 0) {
+        if (stack.length > 0) {
+          const firstUnclosedIndex = stack[0];
           issues.push({
             ruleId: this.id,
             severity: config.severity,
             message: "Opening 『 bracket without matching 』",
             messageJa:
               "原稿編集 第2版に基づき、二重かぎ括弧の起こし（『）と受け（』）が対応していることを確認してください。『 の閉じ忘れが疑われます。",
-            from: lastUnclosedIndex,
-            to: lastUnclosedIndex + 1,
+            from: firstUnclosedIndex,
+            to: firstUnclosedIndex + 1,
             originalText: "『",
             reference: REF,
           });

@@ -60,7 +60,7 @@ export function createGehBangouRangeHyphen(
         severity: config.severity,
         message: "Use em-dash or wave for numeric ranges, not hyphen",
         messageJa:
-          "原稿編集 第2版に基づき、横組での数値範囲は全角ダーシ「—」または波形「〜」を使用します（半角ハイフン「-」は不可）。",
+          "原稿編集 第2版に基づき、横組での数値範囲には二分ダーシ（—）を原則とし、波形「〜」も代替として認められます。半角ハイフン「-」で範囲を示すのは避けてください。",
         replacement: (m) => `${m[1]}〜${m[2]}`,
         reference: REF,
         fixLabelJa: `「〜」に変更`,

@@ -34,6 +34,7 @@ const HOJO_PATTERNS: ReadonlyArray<{ pattern: RegExp; correct: string; messageJa
   {
     // 「〜ない事がある」「〜する事ができる」の「事」→「こと」
     // 直後に「が・は・も・を・に・で・と」などの助詞が来る場合に限定
+    // 直前に漢字がある場合（事件・事態・事実 等の複合語）は除外
     pattern: /(?<=[するないあるできるいるなるれるせる])\s*事(?=[がはもをにでとのから])/u,
     correct: "こと",
     messageJa:
@@ -57,7 +58,8 @@ const HOJO_PATTERNS: ReadonlyArray<{ pattern: RegExp; correct: string; messageJa
   },
   {
     // 「〜わけにはいかない」等の「訳」→「わけ」
-    pattern: /訳(?=[にがはもをでと])/u,
+    // lookbehind で直前が漢字の場合（翻訳・意訳・和訳・英訳 等の複合語）を除外する
+    pattern: /(?<![一-龯])訳(?=[にがはもをでと])/u,
     correct: "わけ",
     messageJa:
       "原稿編集 第2版に基づき、補助的用法の「訳」は「わけ」と仮名書きにします（例：「賛成するわけにはいかない」）。",

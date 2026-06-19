@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 
 import ruleset from "../src/index";
 import manifest from "../manifest.json";
-import { createTestContext, CONFIG } from "./test-kit";
+import { createTestContext, CONFIG, lintText } from "./test-kit";
 
 // ---------------------------------------------------------------------------
 // Golden tests: manifest.docs positive/negative examples
@@ -17,10 +17,11 @@ describe("ruleset golden examples", () => {
         expect(rule, `rule ${meta.ruleId} not returned by createRules`).toBeDefined();
       });
       it("positive example yields no issue", () => {
-        expect(rule!.lint(meta.docs.positiveExample, CONFIG)).toHaveLength(0);
+        // L2 rules use lintWithTokens; lintText dispatches appropriately.
+        expect(lintText(rule!, meta.docs.positiveExample, CONFIG)).toHaveLength(0);
       });
       it("negative example is flagged", () => {
-        expect(rule!.lint(meta.docs.negativeExample, CONFIG).length).toBeGreaterThan(0);
+        expect(lintText(rule!, meta.docs.negativeExample, CONFIG).length).toBeGreaterThan(0);
       });
     });
   }
@@ -370,6 +371,23 @@ describe("geh-hojo-kanji — false positives", () => {
   it("leaves 事実 alone (compound word)", () => {
     expect(rule().lint("その事実を確認した。", CONFIG)).toHaveLength(0);
   });
+
+  // Issue #1: 訳 lookbehind — 二字熟語内の訳は検出しない
+  it("leaves 翻訳が alone (kanji compound — 翻訳)", () => {
+    expect(rule().lint("翻訳が必要だ。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 和訳する alone (kanji compound — 和訳)", () => {
+    expect(rule().lint("原書を和訳する。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 英訳には alone (kanji compound — 英訳)", () => {
+    expect(rule().lint("英訳には時間がかかる。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 意訳も alone (kanji compound — 意訳)", () => {
+    expect(rule().lint("意訳も必要だ。", CONFIG)).toHaveLength(0);
+  });
 });
 
 describe("geh-hojo-kanji — behavior", () => {
@@ -476,5 +494,234 @@ describe("geh-nijuu-bracket-mismatch — behavior", () => {
     expect(
       rule().lint("『吾輩は猫であるを読んだ。", { ...CONFIG, enabled: false }),
     ).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// geh-douin-kateikateii — 助詞介在による lookahead すり抜け修正
+// ---------------------------------------------------------------------------
+
+describe("geh-douin-kateikateii — false positives (extended)", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-kateikateii")!;
+
+  it("leaves 研究の課程を修了 alone (助詞「を」介在)", () => {
+    // 「研究の課程を修了した」は正用：研究課程を修了したという意味
+    expect(rule().lint("研究の課程を修了した。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 開発の課程に在学 alone (在学は正用)", () => {
+    expect(rule().lint("博士開発の課程に在学中だ。", CONFIG)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// geh-douin-taishoutaisho — 統計用語の 対照者 は誤検出しない
+// ---------------------------------------------------------------------------
+
+describe("geh-douin-taishoutaisho — false positives (extended)", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-taishoutaisho")!;
+
+  it("leaves 比較対照者 alone (統計の正用語)", () => {
+    expect(rule().lint("比較対照者を20名設けた。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 無処置対照者 alone (臨床試験の正用語)", () => {
+    expect(rule().lint("無処置対照者との比較を行った。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 健常対照者 alone (医学の正用語)", () => {
+    expect(rule().lint("健常対照者のデータを収集した。", CONFIG)).toHaveLength(0);
+  });
+
+  // 通常の「対照者」は依然として誤検出として検出される
+  it("still flags 対照者 without qualifier (likely misuse)", () => {
+    expect(rule().lint("対照者を集める。", CONFIG).length).toBeGreaterThan(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// geh-katakana-trailing-choon — 複合語への誤検出修正
+// ---------------------------------------------------------------------------
+
+describe("geh-katakana-trailing-choon — false positives (extended)", () => {
+  const rule = () =>
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-katakana-trailing-choon")!;
+
+  it("leaves モニタリング alone (compound starting with モニタ)", () => {
+    expect(rule().lint("モニタリングシステムを導入した。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves センサリー alone (compound starting with センサ)", () => {
+    expect(rule().lint("センサリー評価を実施した。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves プリンタブル alone (compound starting with プリンタ)", () => {
+    expect(rule().lint("プリンタブルな形式で出力した。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves アダプタブル alone (compound starting with アダプタ)", () => {
+    expect(rule().lint("アダプタブルな設計が求められる。", CONFIG)).toHaveLength(0);
+  });
+
+  // 単独の モニタ 等は引き続き検出する
+  it("still flags モニタ alone (no following katakana)", () => {
+    expect(rule().lint("モニタの画面が暗い。", CONFIG).length).toBeGreaterThan(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// geh-gaisuu-arabic — 余波・余地等の誤検出修正
+// ---------------------------------------------------------------------------
+
+describe("geh-gaisuu-arabic — false positives (extended)", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-gaisuu-arabic")!;
+
+  it("leaves 10余波 alone (余波 is a compound noun)", () => {
+    expect(rule().lint("その事件の10余波が今も続いている。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 10余地 alone (余地 is a compound noun)", () => {
+    expect(rule().lint("まだ10余地がある。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 10余裕 alone (余裕 is a compound noun)", () => {
+    expect(rule().lint("10余裕をもって臨んだ。", CONFIG)).toHaveLength(0);
+  });
+
+  // 通常の 概数+余 は引き続き検出する
+  it("still flags 100余人 (legitimate approximate number)", () => {
+    expect(rule().lint("100余人が参加した。", CONFIG).length).toBeGreaterThan(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// geh-hojo-verb-l2 — 補助動詞の仮名書き（L2）
+// ---------------------------------------------------------------------------
+
+import type { Token } from "illusions-lint-sdk";
+
+/**
+ * Hand-crafted mock token sequences for L2 rule tests.
+ * Using Token interface fields: surface, pos, pos_detail_1, basic_form, start, end.
+ */
+function makeTeVerbTokens(
+  mainVerb: { surface: string; basicForm: string },
+  auxVerb: { surface: string; basicForm: string },
+): ReadonlyArray<Token> {
+  const mainEnd = mainVerb.surface.length;
+  return [
+    { surface: mainVerb.surface, pos: "動詞", basic_form: mainVerb.basicForm, start: 0, end: mainEnd },
+    { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start: mainEnd, end: mainEnd + 1 },
+    { surface: auxVerb.surface, pos: "動詞", basic_form: auxVerb.basicForm, start: mainEnd + 1, end: mainEnd + 1 + auxVerb.surface.length },
+    { surface: "。", pos: "記号", start: mainEnd + 1 + auxVerb.surface.length, end: mainEnd + 2 + auxVerb.surface.length },
+  ];
+}
+
+describe("geh-hojo-verb-l2 — detections", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-verb-l2")!;
+
+  it("flags て行く (auxiliary 行く after て)", () => {
+    const tokens = makeTeVerbTokens(
+      { surface: "増え", basicForm: "増える" },
+      { surface: "行く", basicForm: "行く" },
+    );
+    const text = "増えて行く。";
+    const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("いく");
+  });
+
+  it("flags て来る (auxiliary 来る after て)", () => {
+    const tokens = makeTeVerbTokens(
+      { surface: "なっ", basicForm: "なる" },
+      { surface: "来る", basicForm: "来る" },
+    );
+    const text = "なって来る。";
+    const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("くる");
+  });
+
+  it("flags て仕舞う (auxiliary 仕舞う after て)", () => {
+    const tokens = makeTeVerbTokens(
+      { surface: "書い", basicForm: "書く" },
+      { surface: "仕舞う", basicForm: "仕舞う" },
+    );
+    const text = "書いて仕舞う。";
+    const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("しまう");
+  });
+
+  it("flags て置く (auxiliary 置く after て)", () => {
+    const tokens = makeTeVerbTokens(
+      { surface: "通知し", basicForm: "通知する" },
+      { surface: "置く", basicForm: "置く" },
+    );
+    const text = "通知して置く。";
+    const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("おく");
+  });
+});
+
+describe("geh-hojo-verb-l2 — false positives (standalone main verbs)", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-verb-l2")!;
+
+  it("leaves 行く alone when standalone (main verb, no preceding て)", () => {
+    // 「図書館に行く」 — 行く is a main verb, not preceded by て
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "図書館", pos: "名詞", start: 0, end: 3 },
+      { surface: "に", pos: "助詞", pos_detail_1: "格助詞", start: 3, end: 4 },
+      { surface: "行く", pos: "動詞", basic_form: "行く", start: 4, end: 6 },
+      { surface: "。", pos: "記号", start: 6, end: 7 },
+    ];
+    const text = "図書館に行く。";
+    expect((rule() as any).lintWithTokens(text, tokens, CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 来る alone when standalone (main verb, no preceding て)", () => {
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "春", pos: "名詞", start: 0, end: 1 },
+      { surface: "が", pos: "助詞", pos_detail_1: "格助詞", start: 1, end: 2 },
+      { surface: "来る", pos: "動詞", basic_form: "来る", start: 2, end: 4 },
+      { surface: "。", pos: "記号", start: 4, end: 5 },
+    ];
+    const text = "春が来る。";
+    expect((rule() as any).lintWithTokens(text, tokens, CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves いく alone when already kana (no issue)", () => {
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "増え", pos: "動詞", basic_form: "増える", start: 0, end: 2 },
+      { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start: 2, end: 3 },
+      { surface: "いく", pos: "動詞", basic_form: "いく", start: 3, end: 5 },
+      { surface: "。", pos: "記号", start: 5, end: 6 },
+    ];
+    const text = "増えていく。";
+    expect((rule() as any).lintWithTokens(text, tokens, CONFIG)).toHaveLength(0);
+  });
+});
+
+describe("geh-hojo-verb-l2 — behavior", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-verb-l2")!;
+
+  it("does nothing when disabled", () => {
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "増え", pos: "動詞", basic_form: "増える", start: 0, end: 2 },
+      { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start: 2, end: 3 },
+      { surface: "行く", pos: "動詞", basic_form: "行く", start: 3, end: 5 },
+      { surface: "。", pos: "記号", start: 5, end: 6 },
+    ];
+    const text = "増えて行く。";
+    expect((rule() as any).lintWithTokens(text, tokens, { ...CONFIG, enabled: false })).toHaveLength(0);
   });
 });

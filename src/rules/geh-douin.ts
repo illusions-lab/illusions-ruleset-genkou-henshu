@@ -41,8 +41,9 @@ const TAISHOU_WRONG_PATTERNS: ReadonlyArray<{ pattern: RegExp; correct: string; 
   },
   {
     // 「対照者」を「対象者」の誤用と見なす（対照者という語は統計文脈で稀に使うが大半は誤用）
-    // 先読みで「対照実験」「対照表」「対照群」「比較対照」は除外済み
-    pattern: /対照者/u,
+    // 「比較対照者」「内部対照者」「無処置対照者」「健常対照者」のような
+    // 正当な統計・臨床文脈の用語は negative lookbehind で除外する。
+    pattern: /(?<!比較|内部|無処置|健常)対照者/u,
     correct: "対象者",
     hint: "「対照者」は「対象者」の誤用である可能性があります",
   },
@@ -69,7 +70,11 @@ const KAITOU_WRONG_PATTERNS: ReadonlyArray<{ pattern: RegExp; correct: string; h
  */
 const KATEI_WRONG_PATTERNS: ReadonlyArray<{ pattern: RegExp; correct: string; hint: string }> = [
   {
-    pattern: /(開発|制作|製作|研究|進行|作業|検討|議論|交渉|交渉|実施|調査|導入)\s*の\s*課程(?![・、。]?\s*(修了|終了|入学|在学|卒業))/u,
+    // 「開発/製作/研究 + の + 課程」を検出し「過程」への修正を提案する。
+    // 「博士課程を修了」「研究の課程を修了」のように助詞を介して修了・卒業等が
+    // 続く場合（正用）は最大8文字以内にそれらが現れれば除外する。
+    // また「交渉」の重複を削除。
+    pattern: /(開発|制作|製作|研究|進行|作業|検討|議論|交渉|実施|調査|導入)\s*の\s*課程(?![^。\n]{0,8}(修了|終了|入学|在学|卒業))/u,
     correct: "過程",
     hint: "物事の経緯・プロセスは「過程」です（「課程」は教育の区分）",
   },

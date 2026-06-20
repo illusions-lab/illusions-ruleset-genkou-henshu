@@ -161,26 +161,6 @@
       }
     },
     {
-      "ruleId": "geh-hojo-kanji",
-      "nameJa": "補助的用法の語の漢字表記検出",
-      "descriptionJa": "「こと・とき・ところ・もの・わけ・ほか・ため」が、補助的な用法（形式名詞として）で使われているにもかかわらず漢字で書かれている箇所を検出します。公用文の方針に準じ仮名書きを推奨します。",
-      "guidelineId": "genkou-henshu-2",
-      "level": "L1",
-      "defaultConfig": {
-        "enabled": true,
-        "severity": "warning"
-      },
-      "applicableModes": [
-        "official",
-        "academic"
-      ],
-      "docs": {
-        "positiveExample": "許可しないことがある。",
-        "negativeExample": "許可しない事がある。",
-        "sourceReference": "原稿編集 第2版（日本エディタースクール）E 表記の整理 b) 表記整理の具体的事項 6 仮名書きが望ましい語"
-      }
-    },
-    {
       "ruleId": "geh-hojo-verb-l2",
       "nameJa": "補助動詞の仮名書き検出（形態素解析）",
       "descriptionJa": "「ていく（行く）」「てくる（来る）」「ておく（置く）」「てみる（見る）」「てしまう（仕舞う）」「てあげる（上げる）」「ていただく（頂く）」のように、接続助詞「て/で」の後に続く補助動詞が漢字で書かれている箇所を検出し、仮名書きを推奨します。",

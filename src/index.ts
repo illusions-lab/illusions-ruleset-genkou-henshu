@@ -17,7 +17,6 @@ import {
 import { createGehKatakanaTrailingChoon } from "./rules/geh-katakana-choon";
 import { createGehBangouRangeHyphen } from "./rules/geh-bangou-range-hyphen";
 import { createGehGaisuuArabic } from "./rules/geh-gaisuu-arabic";
-import { createGehHojoKanji } from "./rules/geh-hojo-kanji";
 import { createGehBracketMismatch, createGehNijuuBracketMismatch } from "./rules/geh-bracket-mismatch";
 import { createGehHojoVerbL2 } from "./rules/geh-hojo-verb-l2";
 import { createGehKeishikiMeishiL2 } from "./rules/geh-keishiki-meishi-l2";
@@ -34,7 +33,6 @@ const ruleset: RulesetModule = {
       createGehKatakanaTrailingChoon(ctx, manifest),
       createGehBangouRangeHyphen(ctx, manifest),
       createGehGaisuuArabic(ctx, manifest),
-      createGehHojoKanji(ctx, manifest),
       createGehHojoVerbL2(ctx, manifest),
       createGehKeishikiMeishiL2(ctx, manifest),
       createGehBracketMismatch(ctx, manifest),

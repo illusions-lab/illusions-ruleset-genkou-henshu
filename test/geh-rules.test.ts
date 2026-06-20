@@ -340,66 +340,6 @@ describe("geh-gaisuu-arabic — behavior", () => {
 });
 
 // ---------------------------------------------------------------------------
-// geh-hojo-kanji — 補助的用法の語の漢字表記
-// ---------------------------------------------------------------------------
-
-describe("geh-hojo-kanji — detections", () => {
-  const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-kanji")!;
-
-  it("flags 許可しない事がある", () => {
-    expect(rule().lint("許可しない事がある。", CONFIG).length).toBeGreaterThan(0);
-  });
-
-  it("flags 訳にはいかない", () => {
-    expect(rule().lint("賛成する訳にはいかない。", CONFIG).length).toBeGreaterThan(0);
-  });
-});
-
-describe("geh-hojo-kanji — false positives", () => {
-  const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-kanji")!;
-
-  it("leaves こと alone (already kana)", () => {
-    expect(rule().lint("許可しないことがある。", CONFIG)).toHaveLength(0);
-  });
-
-  it("leaves 事件 alone (compound word)", () => {
-    expect(rule().lint("大きな事件が起きた。", CONFIG)).toHaveLength(0);
-  });
-
-  it("leaves 事実 alone (compound word)", () => {
-    expect(rule().lint("その事実を確認した。", CONFIG)).toHaveLength(0);
-  });
-
-  // Issue #1: 訳 lookbehind — 二字熟語内の訳は検出しない
-  it("leaves 翻訳が alone (kanji compound — 翻訳)", () => {
-    expect(rule().lint("翻訳が必要だ。", CONFIG)).toHaveLength(0);
-  });
-
-  it("leaves 和訳する alone (kanji compound — 和訳)", () => {
-    expect(rule().lint("原書を和訳する。", CONFIG)).toHaveLength(0);
-  });
-
-  it("leaves 英訳には alone (kanji compound — 英訳)", () => {
-    expect(rule().lint("英訳には時間がかかる。", CONFIG)).toHaveLength(0);
-  });
-
-  it("leaves 意訳も alone (kanji compound — 意訳)", () => {
-    expect(rule().lint("意訳も必要だ。", CONFIG)).toHaveLength(0);
-  });
-});
-
-describe("geh-hojo-kanji — behavior", () => {
-  const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-kanji")!;
-
-  it("does nothing when disabled", () => {
-    expect(rule().lint("許可しない事がある。", { ...CONFIG, enabled: false })).toHaveLength(0);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // geh-bracket-mismatch — かぎ括弧の対応
 // ---------------------------------------------------------------------------
 
@@ -825,27 +765,6 @@ describe("geh-gaisuu-arabic — edge cases (boundary conditions)", () => {
   });
 });
 
-// geh-hojo-kanji — 上げる auxiliary detection and その事 false-positive risk
-describe("geh-hojo-kanji — edge cases", () => {
-  const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-kanji")!;
-
-  it("flags してあげる (補助動詞「上げる」漢字表記)", () => {
-    // 「て上げる」は「てあげる」に仮名書きすべき補助動詞用法
-    expect(rule().lint("本を貸して上げる。", CONFIG).length).toBeGreaterThan(0);
-  });
-
-  it("leaves 賃上げ alone (compound — 上げ is not auxiliary here)", () => {
-    // 「賃上げ」は複合語で補助動詞用法でない
-    expect(rule().lint("賃上げが実現した。", CONFIG)).toHaveLength(0);
-  });
-
-  it("leaves 訳語 alone (訳 is part of a compound noun)", () => {
-    // 「訳語」は複合語なので「わけ」への誤変換しない
-    expect(rule().lint("適切な訳語を選ぶ。", CONFIG)).toHaveLength(0);
-  });
-});
-
 // geh-hojo-verb-l2 — で (接続助詞) + auxiliary verb detection
 describe("geh-hojo-verb-l2 — edge cases (で接続助詞)", () => {
   const rule = () =>
@@ -1097,6 +1016,91 @@ describe("geh-nijuu-bracket-mismatch — edge cases", () => {
   it("leaves 『』 inside 「」 alone when both balanced", () => {
     expect(
       rule().lint("「『源氏物語』は平安文学の傑作だ」と述べた。", CONFIG),
+    ).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// geh-keishiki-meishi-l2 — 形式名詞の仮名書き（L2、非自立タグで判別）
+// （geh-hojo-kanji 廃止に伴い、形式名詞検出はこのL2に一本化。専用テストを復元）
+// ---------------------------------------------------------------------------
+
+describe("geh-keishiki-meishi-l2 — detections (非自立)", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+
+  const FORMAL: ReadonlyArray<[string, string]> = [
+    ["事", "こと"],
+    ["時", "とき"],
+    ["所", "ところ"],
+    ["物", "もの"],
+    ["訳", "わけ"],
+  ];
+
+  for (const [kanji, kana] of FORMAL) {
+    it(`flags 非自立 「${kanji}」 → 「${kana}」`, () => {
+      const tokens: ReadonlyArray<Token> = [
+        { surface: "する", pos: "動詞", basic_form: "する", start: 0, end: 2 },
+        { surface: kanji, pos: "名詞", pos_detail_1: "非自立", start: 2, end: 2 + kanji.length },
+        {
+          surface: "が",
+          pos: "助詞",
+          pos_detail_1: "格助詞",
+          start: 2 + kanji.length,
+          end: 3 + kanji.length,
+        },
+      ];
+      const issues = (rule() as any).lintWithTokens(`する${kanji}が`, tokens, CONFIG);
+      expect(issues.length).toBeGreaterThan(0);
+      expect(issues[0].fix?.replacement).toBe(kana);
+    });
+  }
+});
+
+describe("geh-keishiki-meishi-l2 — false positives (一般/複合語)", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+
+  it("does NOT flag 具体名詞用法の「事」(一般)", () => {
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "事", pos: "名詞", pos_detail_1: "一般", start: 0, end: 1 },
+      { surface: "を", pos: "助詞", pos_detail_1: "格助詞", start: 1, end: 2 },
+      { surface: "起こす", pos: "動詞", basic_form: "起こす", start: 2, end: 5 },
+    ];
+    expect((rule() as any).lintWithTokens("事を起こす", tokens, CONFIG)).toHaveLength(0);
+  });
+
+  it("does NOT flag 複合語 事件/時間/場所/物語 (一般)", () => {
+    for (const w of ["事件", "時間", "場所", "物語"]) {
+      const tokens: ReadonlyArray<Token> = [
+        { surface: w, pos: "名詞", pos_detail_1: "一般", start: 0, end: w.length },
+      ];
+      expect((rule() as any).lintWithTokens(w, tokens, CONFIG)).toHaveLength(0);
+    }
+  });
+
+  it("does NOT flag already-kana こと", () => {
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "こと", pos: "名詞", pos_detail_1: "非自立", start: 0, end: 2 },
+    ];
+    expect((rule() as any).lintWithTokens("こと", tokens, CONFIG)).toHaveLength(0);
+  });
+});
+
+describe("geh-keishiki-meishi-l2 — behavior", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+
+  it("lint() returns [] (L2 は lintWithTokens 経由)", () => {
+    expect((rule() as any).lint("する事がある", CONFIG)).toHaveLength(0);
+  });
+
+  it("disabled config yields no issues", () => {
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "事", pos: "名詞", pos_detail_1: "非自立", start: 0, end: 1 },
+    ];
+    expect(
+      (rule() as any).lintWithTokens("事", tokens, { ...CONFIG, enabled: false }),
     ).toHaveLength(0);
   });
 });

@@ -6,9 +6,15 @@
 
 ## [Unreleased]
 
-### Added
+## [0.4.0] - 2026-06-20
 
-- （新しいルール・機能をここに）
+### Changed
+
+- `geh-katakana-trailing-choon`: `applicableModes` を全5モードから `["official", "blog", "academic"]` に変更。カタカナ長音統一は横組スタイルプロファイルに限定（novel/sns 除外）。
+- `geh-bangou-range-hyphen`: `applicableModes` を全5モードから `["official", "blog", "academic"]` に変更。出典（原稿編集 第2版 15 横組の数字表記）が横組限定のため novel/sns 除外。
+- `geh-gaisuu-arabic`: `applicableModes` を全5モードから `["official", "blog", "academic"]` に変更。横組数字表記統一ルールに合わせ novel/sns 除外。
+- `geh-hojo-verb-l2`: `applicableModes` に `"blog"` を追加（`["official", "academic"]` → `["official", "blog", "academic"]`）。他ルールセットとの blog 含有統一に合わせる。
+- `geh-keishiki-meishi-l2`: `applicableModes` に `"blog"` を追加（`["official", "academic"]` → `["official", "blog", "academic"]`）。他ルールセットとの blog 含有統一に合わせる。
 
 ## [0.1.0] - 〔YYYY-MM-DD〕
 

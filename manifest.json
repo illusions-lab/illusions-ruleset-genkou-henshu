@@ -4,7 +4,7 @@
   "name": "Genkou Henshu 2",
   "nameJa": "原稿編集 第2版",
   "publisherJa": "日本エディタースクール",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "engineApi": 1,
   "license": "MIT",
   "licenseUrl": "https://opensource.org/license/mit",
@@ -102,11 +102,9 @@
         "severity": "warning"
       },
       "applicableModes": [
-        "novel",
         "official",
         "blog",
-        "academic",
-        "sns"
+        "academic"
       ],
       "docs": {
         "positiveExample": "コンピューターで文書を作成する。",
@@ -125,11 +123,9 @@
         "severity": "warning"
       },
       "applicableModes": [
-        "novel",
         "official",
         "blog",
-        "academic",
-        "sns"
+        "academic"
       ],
       "docs": {
         "positiveExample": "12〜15ページを参照のこと。",
@@ -148,11 +144,9 @@
         "severity": "warning"
       },
       "applicableModes": [
-        "novel",
         "official",
         "blog",
-        "academic",
-        "sns"
+        "academic"
       ],
       "docs": {
         "positiveExample": "数十名の参加者が集まった。",
@@ -172,6 +166,7 @@
       },
       "applicableModes": [
         "official",
+        "blog",
         "academic"
       ],
       "docs": {
@@ -192,6 +187,7 @@
       },
       "applicableModes": [
         "official",
+        "blog",
         "academic"
       ],
       "docs": {

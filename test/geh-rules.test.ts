@@ -725,3 +725,378 @@ describe("geh-hojo-verb-l2 — behavior", () => {
     expect((rule() as any).lintWithTokens(text, tokens, { ...CONFIG, enabled: false })).toHaveLength(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// EDGE-CASE ADDITIONS
+// ---------------------------------------------------------------------------
+
+// geh-douin-taishoutaisho — 対照群 should not trigger (正用)
+describe("geh-douin-taishoutaisho — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-taishoutaisho")!;
+
+  it("leaves 対照群 alone (clinical trial terminology)", () => {
+    // 「対照群」は実験の比較グループとして正当な専門語
+    expect(rule().lint("プラセボ投与の対照群と比較した。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 内部対照者 alone (nested lookbehind qualifier)", () => {
+    expect(rule().lint("内部対照者との差異を検定した。", CONFIG)).toHaveLength(0);
+  });
+
+  it("flags 支援の対照者 (誤用パターン — 支援対象者 が正しい)", () => {
+    expect(rule().lint("この施策の支援の対照者は高齢者に限定する。", CONFIG).length).toBeGreaterThan(0);
+  });
+});
+
+// geh-katakana-trailing-choon — カレンダ・アダプタ・シリンダ の単体検出
+describe("geh-katakana-trailing-choon — edge cases (additional words)", () => {
+  const rule = () =>
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-katakana-trailing-choon")!;
+
+  it("flags カレンダ alone (no following katakana)", () => {
+    const issues = rule().lint("壁のカレンダを確認した。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("カレンダー");
+  });
+
+  it("flags アダプタ alone (no following katakana)", () => {
+    const issues = rule().lint("電源アダプタが必要だ。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("アダプター");
+  });
+
+  it("flags シリンダ alone (no following katakana)", () => {
+    const issues = rule().lint("エンジンのシリンダを交換した。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("シリンダー");
+  });
+
+  it("leaves カレンダー alone (already long vowel)", () => {
+    expect(rule().lint("壁のカレンダーを確認した。", CONFIG)).toHaveLength(0);
+  });
+});
+
+// geh-bangou-range-hyphen — 頁 unit and year-abbreviation patterns
+describe("geh-bangou-range-hyphen — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-bangou-range-hyphen")!;
+
+  it("flags 3-10頁 (頁 is a recognized unit)", () => {
+    const issues = rule().lint("3-10頁の内容を読んだ。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+  });
+
+  it("leaves 2-D or 3-D alone (no numeric right side followed by unit)", () => {
+    // 「2-D」は規格名・略称で数値範囲ではない — 右辺 D は非数字なのでパターン不一致
+    expect(rule().lint("2-Dグラフィックスを使用した。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves plain arithmetic expression alone (no unit word)", () => {
+    // 「12-5」のみでは単位語が後続しないので検出しない
+    expect(rule().lint("計算式 12-5 の結果は7だ。", CONFIG)).toHaveLength(0);
+  });
+
+  it("flags 100-200cm (cm is a recognized unit)", () => {
+    const issues = rule().lint("製品は100-200cmのサイズに対応する。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+  });
+});
+
+// geh-gaisuu-arabic — 500余円 should be flagged (book: 「500余円とはしない」)
+describe("geh-gaisuu-arabic — edge cases (boundary conditions)", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-gaisuu-arabic")!;
+
+  it("flags 500余円 (the book prohibits this pattern)", () => {
+    // 「500余円」は禁止 — 「余り」は許容だが「余」後に別語が続く場合は不可
+    expect(rule().lint("500余円を費やした。", CONFIG).length).toBeGreaterThan(0);
+  });
+
+  it("leaves 数 alone with no following Arabic digit (false-positive guard)", () => {
+    // 「数の問題」— 「数」だけで後ろにアラビア数字なし
+    expect(rule().lint("数の問題を解いた。", CONFIG)).toHaveLength(0);
+  });
+
+  it("flags 何100年 (「何」+ アラビア数字)", () => {
+    expect(rule().lint("何100年も続く伝統だ。", CONFIG).length).toBeGreaterThan(0);
+  });
+});
+
+// geh-hojo-kanji — 上げる auxiliary detection and その事 false-positive risk
+describe("geh-hojo-kanji — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-kanji")!;
+
+  it("flags してあげる (補助動詞「上げる」漢字表記)", () => {
+    // 「て上げる」は「てあげる」に仮名書きすべき補助動詞用法
+    expect(rule().lint("本を貸して上げる。", CONFIG).length).toBeGreaterThan(0);
+  });
+
+  it("leaves 賃上げ alone (compound — 上げ is not auxiliary here)", () => {
+    // 「賃上げ」は複合語で補助動詞用法でない
+    expect(rule().lint("賃上げが実現した。", CONFIG)).toHaveLength(0);
+  });
+
+  it("leaves 訳語 alone (訳 is part of a compound noun)", () => {
+    // 「訳語」は複合語なので「わけ」への誤変換しない
+    expect(rule().lint("適切な訳語を選ぶ。", CONFIG)).toHaveLength(0);
+  });
+});
+
+// geh-hojo-verb-l2 — で (接続助詞) + auxiliary verb detection
+describe("geh-hojo-verb-l2 — edge cases (で接続助詞)", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-verb-l2")!;
+
+  it("flags で貰う (auxiliary 貰う after で)", () => {
+    // 「で」接続助詞 + 補助動詞「貰う」も検出対象
+    const text = "依頼して貰う。";
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "依頼し", pos: "動詞", basic_form: "依頼する", start: 0, end: 3 },
+      { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start: 3, end: 4 },
+      { surface: "貰う", pos: "動詞", basic_form: "貰う", start: 4, end: 6 },
+      { surface: "。", pos: "記号", start: 6, end: 7 },
+    ];
+    const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("もらう");
+  });
+
+  it("flags で上げる (auxiliary 上げる after で)", () => {
+    const text = "運んで上げる。";
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "運ん", pos: "動詞", basic_form: "運ぶ", start: 0, end: 2 },
+      { surface: "で", pos: "助詞", pos_detail_1: "接続助詞", start: 2, end: 3 },
+      { surface: "上げる", pos: "動詞", basic_form: "上げる", start: 3, end: 6 },
+      { surface: "。", pos: "記号", start: 6, end: 7 },
+    ];
+    const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("あげる");
+  });
+
+  it("leaves 上げる alone when preceded by 格助詞 not 接続助詞", () => {
+    // 「に上げる」 — 「に」は格助詞、接続助詞でない
+    const text = "段位に上げる。";
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "段位", pos: "名詞", start: 0, end: 2 },
+      { surface: "に", pos: "助詞", pos_detail_1: "格助詞", start: 2, end: 3 },
+      { surface: "上げる", pos: "動詞", basic_form: "上げる", start: 3, end: 6 },
+      { surface: "。", pos: "記号", start: 6, end: 7 },
+    ];
+    const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// geh-keishiki-meishi-l2 — 形式名詞の仮名書き（L2）
+// ---------------------------------------------------------------------------
+
+/**
+ * Hand-crafted mock token sequences for geh-keishiki-meishi-l2 tests.
+ * All tokens use the Token interface fields: surface, pos, pos_detail_1, start, end.
+ * "非自立" = formal noun (keishiki meishi); "一般" = concrete noun.
+ */
+
+/** Build a token sequence representing a formal-noun usage (名詞-非自立). */
+function makeKeishikiMeishiTokens(
+  prefix: string,
+  nounSurface: string,
+  suffix: string,
+): ReadonlyArray<Token> {
+  const prefixEnd = prefix.length;
+  const nounEnd = prefixEnd + nounSurface.length;
+  const suffixEnd = nounEnd + suffix.length;
+  const tokens: Token[] = [];
+  if (prefix.length > 0) {
+    tokens.push({ surface: prefix, pos: "動詞", start: 0, end: prefixEnd });
+  }
+  tokens.push({ surface: nounSurface, pos: "名詞", pos_detail_1: "非自立", start: prefixEnd, end: nounEnd });
+  if (suffix.length > 0) {
+    tokens.push({ surface: suffix, pos: "助詞", pos_detail_1: "格助詞", start: nounEnd, end: suffixEnd });
+  }
+  return tokens;
+}
+
+/** Build a token sequence representing a concrete noun (名詞-一般). */
+function makeIpanMeishiTokens(
+  nounSurface: string,
+): ReadonlyArray<Token> {
+  return [
+    { surface: nounSurface, pos: "名詞", pos_detail_1: "一般", start: 0, end: nounSurface.length },
+    { surface: "。", pos: "記号", start: nounSurface.length, end: nounSurface.length + 1 },
+  ];
+}
+
+describe("geh-keishiki-meishi-l2 — detections (positive triggers)", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+
+  it("flags 事 as formal noun (名詞-非自立)", () => {
+    const tokens = makeKeishikiMeishiTokens("しない", "事", "がある");
+    const issues = (rule() as any).lintWithTokens("しない事がある。", tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("こと");
+    expect(issues[0].from).toBe("しない".length);
+  });
+
+  it("flags 時 as formal noun (名詞-非自立)", () => {
+    const tokens = makeKeishikiMeishiTokens("事故の", "時", "は");
+    const issues = (rule() as any).lintWithTokens("事故の時は。", tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("とき");
+  });
+
+  it("flags 所 as formal noun (名詞-非自立)", () => {
+    const tokens = makeKeishikiMeishiTokens("現在の", "所", "差し支えない");
+    const issues = (rule() as any).lintWithTokens("現在の所差し支えない。", tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("ところ");
+  });
+
+  it("flags 物 as formal noun (名詞-非自立)", () => {
+    const tokens = makeKeishikiMeishiTokens("正しい", "物", "と");
+    const issues = (rule() as any).lintWithTokens("正しい物と認める。", tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("もの");
+  });
+
+  it("flags 訳 as formal noun (名詞-非自立)", () => {
+    const tokens = makeKeishikiMeishiTokens("賛成する", "訳", "には");
+    const issues = (rule() as any).lintWithTokens("賛成する訳には。", tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("わけ");
+  });
+});
+
+describe("geh-keishiki-meishi-l2 — false positives (非自立 vs 一般 discrimination)", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+
+  it("leaves 事 alone when tagged as 名詞-一般 (concrete noun)", () => {
+    // 「事」単独だが pos_detail_1 が "一般" の場合は実質名詞として除外
+    const tokens = makeIpanMeishiTokens("事");
+    const issues = (rule() as any).lintWithTokens("事。", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("leaves 事件 alone (compound word — kuromoji tags as 一般)", () => {
+    // 「事件」は複合語として 名詞-一般 でタグ付けされる
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "事件", pos: "名詞", pos_detail_1: "一般", start: 0, end: 2 },
+      { surface: "が", pos: "助詞", pos_detail_1: "格助詞", start: 2, end: 3 },
+      { surface: "起きた", pos: "動詞", start: 3, end: 6 },
+      { surface: "。", pos: "記号", start: 6, end: 7 },
+    ];
+    const issues = (rule() as any).lintWithTokens("事件が起きた。", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("leaves 時間 alone (compound word — 名詞-一般)", () => {
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "時間", pos: "名詞", pos_detail_1: "一般", start: 0, end: 2 },
+      { surface: "が", pos: "助詞", pos_detail_1: "格助詞", start: 2, end: 3 },
+      { surface: "ない", pos: "助動詞", start: 3, end: 5 },
+      { surface: "。", pos: "記号", start: 5, end: 6 },
+    ];
+    const issues = (rule() as any).lintWithTokens("時間がない。", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("leaves 場所 alone (compound word — 名詞-一般)", () => {
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "場所", pos: "名詞", pos_detail_1: "一般", start: 0, end: 2 },
+      { surface: "を", pos: "助詞", pos_detail_1: "格助詞", start: 2, end: 3 },
+      { surface: "確認する", pos: "動詞", start: 3, end: 7 },
+      { surface: "。", pos: "記号", start: 7, end: 8 },
+    ];
+    const issues = (rule() as any).lintWithTokens("場所を確認する。", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("leaves 物語 alone (compound word — 名詞-一般)", () => {
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "物語", pos: "名詞", pos_detail_1: "一般", start: 0, end: 2 },
+      { surface: "を", pos: "助詞", pos_detail_1: "格助詞", start: 2, end: 3 },
+      { surface: "読む", pos: "動詞", start: 3, end: 5 },
+      { surface: "。", pos: "記号", start: 5, end: 6 },
+    ];
+    const issues = (rule() as any).lintWithTokens("物語を読む。", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("leaves already-kana こと alone (no kanji to flag)", () => {
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "し", pos: "動詞", start: 0, end: 1 },
+      { surface: "ない", pos: "助動詞", start: 1, end: 3 },
+      { surface: "こと", pos: "名詞", pos_detail_1: "非自立", start: 3, end: 5 },
+      { surface: "が", pos: "助詞", pos_detail_1: "格助詞", start: 5, end: 6 },
+      { surface: "ある", pos: "動詞", start: 6, end: 8 },
+      { surface: "。", pos: "記号", start: 8, end: 9 },
+    ];
+    const issues = (rule() as any).lintWithTokens("しないことがある。", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+});
+
+describe("geh-keishiki-meishi-l2 — behavior", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+
+  it("does nothing when disabled", () => {
+    const tokens = makeKeishikiMeishiTokens("しない", "事", "がある");
+    const issues = (rule() as any).lintWithTokens("しない事がある。", tokens, { ...CONFIG, enabled: false });
+    expect(issues).toHaveLength(0);
+  });
+
+  it("reports multiple formal-noun violations in one sentence", () => {
+    // 「この事は、その時に解決するわけだ」 — 事・時・訳 が全て 非自立
+    const tokens: ReadonlyArray<Token> = [
+      { surface: "この", pos: "連体詞", start: 0, end: 2 },
+      { surface: "事", pos: "名詞", pos_detail_1: "非自立", start: 2, end: 3 },
+      { surface: "は", pos: "助詞", pos_detail_1: "係助詞", start: 3, end: 4 },
+      { surface: "、", pos: "記号", start: 4, end: 5 },
+      { surface: "その", pos: "連体詞", start: 5, end: 7 },
+      { surface: "時", pos: "名詞", pos_detail_1: "非自立", start: 7, end: 8 },
+      { surface: "に", pos: "助詞", pos_detail_1: "格助詞", start: 8, end: 9 },
+      { surface: "解決する", pos: "動詞", start: 9, end: 13 },
+      { surface: "訳", pos: "名詞", pos_detail_1: "非自立", start: 13, end: 14 },
+      { surface: "だ", pos: "助動詞", start: 14, end: 15 },
+      { surface: "。", pos: "記号", start: 15, end: 16 },
+    ];
+    const text = "この事は、その時に解決する訳だ。";
+    const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
+    expect(issues).toHaveLength(3);
+    expect(issues[0].fix?.replacement).toBe("こと");
+    expect(issues[1].fix?.replacement).toBe("とき");
+    expect(issues[2].fix?.replacement).toBe("わけ");
+    // Check ascending order
+    expect(issues[0].from).toBeLessThan(issues[1].from);
+    expect(issues[1].from).toBeLessThan(issues[2].from);
+  });
+});
+
+// geh-nijuu-bracket-mismatch — edge cases
+describe("geh-nijuu-bracket-mismatch — edge cases", () => {
+  const rule = () =>
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-nijuu-bracket-mismatch")!;
+
+  it("flags multiple unclosed 『 — reports only the first", () => {
+    // 「『a』と『b」のように2番目が未閉で最初の不対応のみ報告する
+    const issues = rule().lint("『甲』と『乙を比較した。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].from).toBe("『甲』と".length); // 2番目の 『 位置
+  });
+
+  it("leaves 『』 inside 「」 alone when both balanced", () => {
+    expect(
+      rule().lint("「『源氏物語』は平安文学の傑作だ」と述べた。", CONFIG),
+    ).toHaveLength(0);
+  });
+});

@@ -3,7 +3,8 @@
   "id": "com.illusions-lab.genkou-henshu",
   "name": "Genkou Henshu 2",
   "nameJa": "原稿編集 第2版",
-  "version": "0.2.0",
+  "publisherJa": "日本エディタースクール",
+  "version": "0.3.0",
   "engineApi": 1,
   "license": "MIT",
   "licenseUrl": "https://opensource.org/license/mit",
@@ -27,8 +28,17 @@
       "descriptionJa": "「対照実験」「比較対照」の「対照」と「研究対象」「対象者」の「対象」は意味が異なります。典型的な固定表現に基づき、誤用と思われる箇所を検出します。",
       "guidelineId": "genkou-henshu-2",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "今回の研究対象は成人男性に限定した。",
         "negativeExample": "今回の研究の対照者を募集する。",
@@ -41,8 +51,17 @@
       "descriptionJa": "アンケートへの「回答」と問題への「解答」は使い分けが必要です。典型的な固定表現に基づき、誤用と思われる箇所を検出します。",
       "guidelineId": "genkou-henshu-2",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "アンケートにご回答ください。",
         "negativeExample": "アンケートにご解答ください。",
@@ -55,8 +74,17 @@
       "descriptionJa": "物事の進行・経過を表す「過程」と、学習・教育の区分を表す「課程」は意味が異なります。典型的な誤用パターンを検出します。",
       "guidelineId": "genkou-henshu-2",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "開発の過程で多くの問題が生じた。",
         "negativeExample": "開発の課程で多くの問題が生じた。",
@@ -69,8 +97,17 @@
       "descriptionJa": "「コンピュータ」「プリンタ」のように英語の -er/-or/-ar に相当する末尾の長音符が省略された代表的な片仮名語を検出し、長音符付き表記を提案します。外来語の表記（1991年内閣告示）の留意事項に基づく不統一を防ぎます。",
       "guidelineId": "genkou-henshu-2",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "コンピューターで文書を作成する。",
         "negativeExample": "コンピュータで文書を作成する。",
@@ -83,8 +120,17 @@
       "descriptionJa": "横組での数値・ページ範囲の表記には二分ダーシ（—）を原則とし、波形「〜」も代替として認められます（書籍原則）。半角ハイフン「-」で数値範囲を示している箇所を検出します。",
       "guidelineId": "genkou-henshu-2",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "12〜15ページを参照のこと。",
         "negativeExample": "12-15ページを参照のこと。",
@@ -97,8 +143,17 @@
       "descriptionJa": "「数10名」「100余人」のようにアラビア数字と概数語を組み合わせた表記を検出します。概数は「数十名」「百余人」のように漢数字で統一するのが原則です。",
       "guidelineId": "genkou-henshu-2",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "数十名の参加者が集まった。",
         "negativeExample": "数10名の参加者が集まった。",
@@ -111,8 +166,14 @@
       "descriptionJa": "「こと・とき・ところ・もの・わけ・ほか・ため」が、補助的な用法（形式名詞として）で使われているにもかかわらず漢字で書かれている箇所を検出します。公用文の方針に準じ仮名書きを推奨します。",
       "guidelineId": "genkou-henshu-2",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["official", "academic"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "official",
+        "academic"
+      ],
       "docs": {
         "positiveExample": "許可しないことがある。",
         "negativeExample": "許可しない事がある。",
@@ -125,11 +186,37 @@
       "descriptionJa": "「ていく（行く）」「てくる（来る）」「ておく（置く）」「てみる（見る）」「てしまう（仕舞う）」「てあげる（上げる）」「ていただく（頂く）」のように、接続助詞「て/で」の後に続く補助動詞が漢字で書かれている箇所を検出し、仮名書きを推奨します。",
       "guidelineId": "genkou-henshu-2",
       "level": "L2",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["official", "academic"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "official",
+        "academic"
+      ],
       "docs": {
         "positiveExample": "負担が増えていく。",
         "negativeExample": "負担が増えて行く。",
+        "sourceReference": "原稿編集 第2版（日本エディタースクール）E 表記の整理 b) 表記整理の具体的事項 6 仮名書きが望ましい語"
+      }
+    },
+    {
+      "ruleId": "geh-keishiki-meishi-l2",
+      "nameJa": "形式名詞の仮名書き検出（形態素解析）",
+      "descriptionJa": "「こと・とき・ところ・もの・わけ」が形式名詞として使われているにもかかわらず漢字（事・時・所・物・訳）で書かれている箇所を検出します。形態素解析の「名詞-非自立」タグを根拠とするため、「事件」「時間」「場所」のような実質名詞との誤検出を防ぎます。",
+      "guidelineId": "genkou-henshu-2",
+      "level": "L2",
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "official",
+        "academic"
+      ],
+      "docs": {
+        "positiveExample": "許可しないことがある。",
+        "negativeExample": "許可しない事がある。",
         "sourceReference": "原稿編集 第2版（日本エディタースクール）E 表記の整理 b) 表記整理の具体的事項 6 仮名書きが望ましい語"
       }
     },
@@ -139,8 +226,17 @@
       "descriptionJa": "「」の開き括弧と閉じ括弧の個数が段落内で一致しない場合を検出します。括弧類は起こし（「）と受け（」）が必ず対応していることを確認してください。",
       "guidelineId": "genkou-henshu-2",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "彼は「今日はいい天気だ」と言った。",
         "negativeExample": "彼は「今日はいい天気だと言った。",
@@ -153,8 +249,17 @@
       "descriptionJa": "『』の開き括弧と閉じ括弧の個数が段落内で一致しない場合を検出します。",
       "guidelineId": "genkou-henshu-2",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "『吾輩は猫である』を読んだ。",
         "negativeExample": "『吾輩は猫であるを読んだ。",

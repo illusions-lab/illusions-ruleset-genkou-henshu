@@ -20,6 +20,7 @@ import { createGehGaisuuArabic } from "./rules/geh-gaisuu-arabic";
 import { createGehHojoKanji } from "./rules/geh-hojo-kanji";
 import { createGehBracketMismatch, createGehNijuuBracketMismatch } from "./rules/geh-bracket-mismatch";
 import { createGehHojoVerbL2 } from "./rules/geh-hojo-verb-l2";
+import { createGehKeishikiMeishiL2 } from "./rules/geh-keishiki-meishi-l2";
 
 const manifest = manifestJson as RulesetModule["manifest"];
 
@@ -35,6 +36,7 @@ const ruleset: RulesetModule = {
       createGehGaisuuArabic(ctx, manifest),
       createGehHojoKanji(ctx, manifest),
       createGehHojoVerbL2(ctx, manifest),
+      createGehKeishikiMeishiL2(ctx, manifest),
       createGehBracketMismatch(ctx, manifest),
       createGehNijuuBracketMismatch(ctx, manifest),
     ];

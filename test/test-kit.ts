@@ -345,6 +345,31 @@ function simpleTokenize(text: string): Token[] {
       { surface: "。", pos: "記号", start: 8, end: 9 },
     ];
   }
+  // geh-keishiki-meishi-l2 golden examples
+  // Positive: 「許可しないことがある。」 — こと is already kana, no issue
+  if (text === "許可しないことがある。") {
+    return [
+      { surface: "許可", pos: "名詞", pos_detail_1: "サ変接続", start: 0, end: 2 },
+      { surface: "し", pos: "動詞", start: 2, end: 3 },
+      { surface: "ない", pos: "助動詞", start: 3, end: 5 },
+      { surface: "こと", pos: "名詞", pos_detail_1: "非自立", start: 5, end: 7 },
+      { surface: "が", pos: "助詞", pos_detail_1: "格助詞", start: 7, end: 8 },
+      { surface: "ある", pos: "動詞", start: 8, end: 10 },
+      { surface: "。", pos: "記号", start: 10, end: 11 },
+    ];
+  }
+  // Negative: 「許可しない事がある。」 — 事 is kanji formal noun, should be flagged
+  if (text === "許可しない事がある。") {
+    return [
+      { surface: "許可", pos: "名詞", pos_detail_1: "サ変接続", start: 0, end: 2 },
+      { surface: "し", pos: "動詞", start: 2, end: 3 },
+      { surface: "ない", pos: "助動詞", start: 3, end: 5 },
+      { surface: "事", pos: "名詞", pos_detail_1: "非自立", start: 5, end: 6 },
+      { surface: "が", pos: "助詞", pos_detail_1: "格助詞", start: 6, end: 7 },
+      { surface: "ある", pos: "動詞", start: 7, end: 9 },
+      { surface: "。", pos: "記号", start: 9, end: 10 },
+    ];
+  }
   // Fallback: return a single token for the whole text
   return [{ surface: text, pos: "名詞", start: 0, end: text.length }];
 }

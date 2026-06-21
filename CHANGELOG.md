@@ -16,8 +16,8 @@
 - `geh-hojo-verb-l2`: `applicableModes` に `"blog"` を追加（`["official", "academic"]` → `["official", "blog", "academic"]`）。他ルールセットとの blog 含有統一に合わせる。
 - `geh-keishiki-meishi-l2`: `applicableModes` に `"blog"` を追加（`["official", "academic"]` → `["official", "blog", "academic"]`）。他ルールセットとの blog 含有統一に合わせる。
 
-## [0.1.0] - 〔YYYY-MM-DD〕
+## [0.1.0] - 2026-06-19
 
 ### Added
 
-- 初版。`sample-fw-exclaim` ルールを追加。
+- 初版。同音語・カタカナ末尾長音・番号範囲ハイフン・概数アラビア数字・補助動詞/形式名詞・括弧整合など全 10 ルール（原稿編集 第2版 準拠）を実装。

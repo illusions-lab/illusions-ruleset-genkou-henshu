@@ -14,14 +14,21 @@ describe("ruleset golden examples", () => {
     describe(meta.ruleId, () => {
       const rule = rules.find((r) => r.id === meta.ruleId);
       it("is built by createRules", () => {
-        expect(rule, `rule ${meta.ruleId} not returned by createRules`).toBeDefined();
+        expect(
+          rule,
+          `rule ${meta.ruleId} not returned by createRules`,
+        ).toBeDefined();
       });
       it("positive example yields no issue", () => {
         // L2 rules use lintWithTokens; lintText dispatches appropriately.
-        expect(lintText(rule!, meta.docs.positiveExample, CONFIG)).toHaveLength(0);
+        expect(lintText(rule!, meta.docs.positiveExample, CONFIG)).toHaveLength(
+          0,
+        );
       });
       it("negative example is flagged", () => {
-        expect(lintText(rule!, meta.docs.negativeExample, CONFIG).length).toBeGreaterThan(0);
+        expect(
+          lintText(rule!, meta.docs.negativeExample, CONFIG).length,
+        ).toBeGreaterThan(0);
       });
     });
   }
@@ -33,7 +40,9 @@ describe("ruleset golden examples", () => {
 
 describe("geh-douin-taishoutaisho — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-taishoutaisho")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-taishoutaisho")!;
 
   it("flags 研究対照者", () => {
     const issues = rule().lint("今回の研究対照者は成人100名だ。", CONFIG);
@@ -48,14 +57,18 @@ describe("geh-douin-taishoutaisho — detections", () => {
 
 describe("geh-douin-taishoutaisho — false positives", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-taishoutaisho")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-taishoutaisho")!;
 
   it("leaves 対照実験 alone", () => {
     expect(rule().lint("対照実験を行った。", CONFIG)).toHaveLength(0);
   });
 
   it("leaves 比較対照 alone", () => {
-    expect(rule().lint("比較対照として旧データを用いる。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("比較対照として旧データを用いる。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("leaves 対照表 alone", () => {
@@ -69,10 +82,14 @@ describe("geh-douin-taishoutaisho — false positives", () => {
 
 describe("geh-douin-taishoutaisho — behavior", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-taishoutaisho")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-taishoutaisho")!;
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("対照者を集める。", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(
+      rule().lint("対照者を集める。", { ...CONFIG, enabled: false }),
+    ).toHaveLength(0);
   });
 });
 
@@ -82,7 +99,9 @@ describe("geh-douin-taishoutaisho — behavior", () => {
 
 describe("geh-douin-kaitoukaito — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-kaitoukaito")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-kaitoukaito")!;
 
   it("flags アンケートにご解答", () => {
     const issues = rule().lint("アンケートにご解答ください。", CONFIG);
@@ -97,7 +116,9 @@ describe("geh-douin-kaitoukaito — detections", () => {
 
 describe("geh-douin-kaitoukaito — false positives", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-kaitoukaito")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-kaitoukaito")!;
 
   it("leaves 試験の解答 alone", () => {
     expect(rule().lint("試験の解答欄を埋めた。", CONFIG)).toHaveLength(0);
@@ -114,11 +135,16 @@ describe("geh-douin-kaitoukaito — false positives", () => {
 
 describe("geh-douin-kaitoukaito — behavior", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-kaitoukaito")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-kaitoukaito")!;
 
   it("does nothing when disabled", () => {
     expect(
-      rule().lint("アンケートにご解答ください。", { ...CONFIG, enabled: false }),
+      rule().lint("アンケートにご解答ください。", {
+        ...CONFIG,
+        enabled: false,
+      }),
     ).toHaveLength(0);
   });
 });
@@ -129,7 +155,9 @@ describe("geh-douin-kaitoukaito — behavior", () => {
 
 describe("geh-douin-kateikateii — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-kateikateii")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-kateikateii")!;
 
   it("flags 開発の課程で", () => {
     const issues = rule().lint("開発の課程で問題が生じた。", CONFIG);
@@ -144,7 +172,9 @@ describe("geh-douin-kateikateii — detections", () => {
 
 describe("geh-douin-kateikateii — false positives", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-kateikateii")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-kateikateii")!;
 
   it("leaves 博士課程 alone", () => {
     expect(rule().lint("博士課程に在学中だ。", CONFIG)).toHaveLength(0);
@@ -155,18 +185,22 @@ describe("geh-douin-kateikateii — false positives", () => {
   });
 
   it("leaves 開発の過程 alone (already correct)", () => {
-    expect(rule().lint("開発の過程で多くの問題が生じた。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("開発の過程で多くの問題が生じた。", CONFIG),
+    ).toHaveLength(0);
   });
 });
 
 describe("geh-douin-kateikateii — behavior", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-kateikateii")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-kateikateii")!;
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("開発の課程で問題が生じた。", { ...CONFIG, enabled: false })).toHaveLength(
-      0,
-    );
+    expect(
+      rule().lint("開発の課程で問題が生じた。", { ...CONFIG, enabled: false }),
+    ).toHaveLength(0);
   });
 });
 
@@ -226,7 +260,9 @@ describe("geh-katakana-trailing-choon — behavior", () => {
       .find((r) => r.id === "geh-katakana-trailing-choon")!;
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("コンピュータを使う。", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(
+      rule().lint("コンピュータを使う。", { ...CONFIG, enabled: false }),
+    ).toHaveLength(0);
   });
 
   it("reports each occurrence independently", () => {
@@ -242,7 +278,9 @@ describe("geh-katakana-trailing-choon — behavior", () => {
 
 describe("geh-bangou-range-hyphen — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-bangou-range-hyphen")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-bangou-range-hyphen")!;
 
   it("flags 12-15ページ", () => {
     const issues = rule().lint("12-15ページを参照のこと。", CONFIG);
@@ -263,7 +301,9 @@ describe("geh-bangou-range-hyphen — detections", () => {
 
 describe("geh-bangou-range-hyphen — false positives", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-bangou-range-hyphen")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-bangou-range-hyphen")!;
 
   it("leaves 12〜15ページ alone (already correct)", () => {
     expect(rule().lint("12〜15ページを参照のこと。", CONFIG)).toHaveLength(0);
@@ -281,10 +321,14 @@ describe("geh-bangou-range-hyphen — false positives", () => {
 
 describe("geh-bangou-range-hyphen — behavior", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-bangou-range-hyphen")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-bangou-range-hyphen")!;
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("12-15ページを参照。", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(
+      rule().lint("12-15ページを参照。", { ...CONFIG, enabled: false }),
+    ).toHaveLength(0);
   });
 });
 
@@ -294,14 +338,20 @@ describe("geh-bangou-range-hyphen — behavior", () => {
 
 describe("geh-gaisuu-arabic — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-gaisuu-arabic")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-gaisuu-arabic")!;
 
   it("flags 数10名", () => {
-    expect(rule().lint("数10名の参加者が集まった。", CONFIG).length).toBeGreaterThan(0);
+    expect(
+      rule().lint("数10名の参加者が集まった。", CONFIG).length,
+    ).toBeGreaterThan(0);
   });
 
   it("flags 数100個", () => {
-    expect(rule().lint("数100個の部品が必要だ。", CONFIG).length).toBeGreaterThan(0);
+    expect(
+      rule().lint("数100個の部品が必要だ。", CONFIG).length,
+    ).toBeGreaterThan(0);
   });
 
   it("flags 何10回", () => {
@@ -309,13 +359,17 @@ describe("geh-gaisuu-arabic — detections", () => {
   });
 
   it("flags 100余人", () => {
-    expect(rule().lint("100余人が参加した。", CONFIG).length).toBeGreaterThan(0);
+    expect(rule().lint("100余人が参加した。", CONFIG).length).toBeGreaterThan(
+      0,
+    );
   });
 });
 
 describe("geh-gaisuu-arabic — false positives", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-gaisuu-arabic")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-gaisuu-arabic")!;
 
   it("leaves 数十名 alone (correct kanji)", () => {
     expect(rule().lint("数十名の参加者が集まった。", CONFIG)).toHaveLength(0);
@@ -332,10 +386,14 @@ describe("geh-gaisuu-arabic — false positives", () => {
 
 describe("geh-gaisuu-arabic — behavior", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-gaisuu-arabic")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-gaisuu-arabic")!;
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("数10名が来た。", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(
+      rule().lint("数10名が来た。", { ...CONFIG, enabled: false }),
+    ).toHaveLength(0);
   });
 });
 
@@ -345,7 +403,9 @@ describe("geh-gaisuu-arabic — behavior", () => {
 
 describe("geh-bracket-mismatch — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-bracket-mismatch")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-bracket-mismatch")!;
 
   it("flags unclosed 「", () => {
     const issues = rule().lint("彼は「今日はいい天気だと言った。", CONFIG);
@@ -360,10 +420,14 @@ describe("geh-bracket-mismatch — detections", () => {
 
 describe("geh-bracket-mismatch — false positives", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-bracket-mismatch")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-bracket-mismatch")!;
 
   it("leaves matched brackets alone", () => {
-    expect(rule().lint("彼は「今日はいい天気だ」と言った。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("彼は「今日はいい天気だ」と言った。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("leaves nested brackets alone when balanced", () => {
@@ -379,11 +443,16 @@ describe("geh-bracket-mismatch — false positives", () => {
 
 describe("geh-bracket-mismatch — behavior", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-bracket-mismatch")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-bracket-mismatch")!;
 
   it("does nothing when disabled", () => {
     expect(
-      rule().lint("彼は「今日はいい天気だと言った。", { ...CONFIG, enabled: false }),
+      rule().lint("彼は「今日はいい天気だと言った。", {
+        ...CONFIG,
+        enabled: false,
+      }),
     ).toHaveLength(0);
   });
 });
@@ -443,7 +512,9 @@ describe("geh-nijuu-bracket-mismatch — behavior", () => {
 
 describe("geh-douin-kateikateii — false positives (extended)", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-kateikateii")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-kateikateii")!;
 
   it("leaves 研究の課程を修了 alone (助詞「を」介在)", () => {
     // 「研究の課程を修了した」は正用：研究課程を修了したという意味
@@ -461,18 +532,24 @@ describe("geh-douin-kateikateii — false positives (extended)", () => {
 
 describe("geh-douin-taishoutaisho — false positives (extended)", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-taishoutaisho")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-taishoutaisho")!;
 
   it("leaves 比較対照者 alone (統計の正用語)", () => {
     expect(rule().lint("比較対照者を20名設けた。", CONFIG)).toHaveLength(0);
   });
 
   it("leaves 無処置対照者 alone (臨床試験の正用語)", () => {
-    expect(rule().lint("無処置対照者との比較を行った。", CONFIG)).toHaveLength(0);
+    expect(rule().lint("無処置対照者との比較を行った。", CONFIG)).toHaveLength(
+      0,
+    );
   });
 
   it("leaves 健常対照者 alone (医学の正用語)", () => {
-    expect(rule().lint("健常対照者のデータを収集した。", CONFIG)).toHaveLength(0);
+    expect(rule().lint("健常対照者のデータを収集した。", CONFIG)).toHaveLength(
+      0,
+    );
   });
 
   // 通常の「対照者」は依然として誤検出として検出される
@@ -492,7 +569,9 @@ describe("geh-katakana-trailing-choon — false positives (extended)", () => {
       .find((r) => r.id === "geh-katakana-trailing-choon")!;
 
   it("leaves モニタリング alone (compound starting with モニタ)", () => {
-    expect(rule().lint("モニタリングシステムを導入した。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("モニタリングシステムを導入した。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("leaves センサリー alone (compound starting with センサ)", () => {
@@ -500,16 +579,22 @@ describe("geh-katakana-trailing-choon — false positives (extended)", () => {
   });
 
   it("leaves プリンタブル alone (compound starting with プリンタ)", () => {
-    expect(rule().lint("プリンタブルな形式で出力した。", CONFIG)).toHaveLength(0);
+    expect(rule().lint("プリンタブルな形式で出力した。", CONFIG)).toHaveLength(
+      0,
+    );
   });
 
   it("leaves アダプタブル alone (compound starting with アダプタ)", () => {
-    expect(rule().lint("アダプタブルな設計が求められる。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("アダプタブルな設計が求められる。", CONFIG),
+    ).toHaveLength(0);
   });
 
   // 単独の モニタ 等は引き続き検出する
   it("still flags モニタ alone (no following katakana)", () => {
-    expect(rule().lint("モニタの画面が暗い。", CONFIG).length).toBeGreaterThan(0);
+    expect(rule().lint("モニタの画面が暗い。", CONFIG).length).toBeGreaterThan(
+      0,
+    );
   });
 });
 
@@ -519,10 +604,14 @@ describe("geh-katakana-trailing-choon — false positives (extended)", () => {
 
 describe("geh-gaisuu-arabic — false positives (extended)", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-gaisuu-arabic")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-gaisuu-arabic")!;
 
   it("leaves 10余波 alone (余波 is a compound noun)", () => {
-    expect(rule().lint("その事件の10余波が今も続いている。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("その事件の10余波が今も続いている。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("leaves 10余地 alone (余地 is a compound noun)", () => {
@@ -535,7 +624,9 @@ describe("geh-gaisuu-arabic — false positives (extended)", () => {
 
   // 通常の 概数+余 は引き続き検出する
   it("still flags 100余人 (legitimate approximate number)", () => {
-    expect(rule().lint("100余人が参加した。", CONFIG).length).toBeGreaterThan(0);
+    expect(rule().lint("100余人が参加した。", CONFIG).length).toBeGreaterThan(
+      0,
+    );
   });
 });
 
@@ -555,16 +646,41 @@ function makeTeVerbTokens(
 ): ReadonlyArray<Token> {
   const mainEnd = mainVerb.surface.length;
   return [
-    { surface: mainVerb.surface, pos: "動詞", basic_form: mainVerb.basicForm, start: 0, end: mainEnd },
-    { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start: mainEnd, end: mainEnd + 1 },
-    { surface: auxVerb.surface, pos: "動詞", basic_form: auxVerb.basicForm, start: mainEnd + 1, end: mainEnd + 1 + auxVerb.surface.length },
-    { surface: "。", pos: "記号", start: mainEnd + 1 + auxVerb.surface.length, end: mainEnd + 2 + auxVerb.surface.length },
+    {
+      surface: mainVerb.surface,
+      pos: "動詞",
+      basic_form: mainVerb.basicForm,
+      start: 0,
+      end: mainEnd,
+    },
+    {
+      surface: "て",
+      pos: "助詞",
+      pos_detail_1: "接続助詞",
+      start: mainEnd,
+      end: mainEnd + 1,
+    },
+    {
+      surface: auxVerb.surface,
+      pos: "動詞",
+      basic_form: auxVerb.basicForm,
+      start: mainEnd + 1,
+      end: mainEnd + 1 + auxVerb.surface.length,
+    },
+    {
+      surface: "。",
+      pos: "記号",
+      start: mainEnd + 1 + auxVerb.surface.length,
+      end: mainEnd + 2 + auxVerb.surface.length,
+    },
   ];
 }
 
 describe("geh-hojo-verb-l2 — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-verb-l2")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-hojo-verb-l2")!;
 
   it("flags て行く (auxiliary 行く after て)", () => {
     const tokens = makeTeVerbTokens(
@@ -586,6 +702,37 @@ describe("geh-hojo-verb-l2 — detections", () => {
     const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
     expect(issues.length).toBeGreaterThan(0);
     expect(issues[0].fix?.replacement).toBe("くる");
+  });
+
+  it("replaces the full 来て inflection with its reading", () => {
+    const tokens: ReadonlyArray<Token> = [
+      {
+        surface: "て",
+        pos: "助詞",
+        pos_detail_1: "接続助詞",
+        start: 0,
+        end: 1,
+      },
+      {
+        surface: "来",
+        pos: "動詞",
+        basic_form: "来る",
+        reading: "キ",
+        start: 1,
+        end: 2,
+      },
+      {
+        surface: "て",
+        pos: "助詞",
+        pos_detail_1: "接続助詞",
+        reading: "テ",
+        start: 2,
+        end: 3,
+      },
+    ];
+    const issues = (rule() as any).lintWithTokens("て来て", tokens, CONFIG);
+    expect(issues[0]).toMatchObject({ from: 1, to: 3, originalText: "来て" });
+    expect(issues[0].fix?.replacement).toBe("きて");
   });
 
   it("flags て仕舞う (auxiliary 仕舞う after て)", () => {
@@ -613,7 +760,9 @@ describe("geh-hojo-verb-l2 — detections", () => {
 
 describe("geh-hojo-verb-l2 — false positives (standalone main verbs)", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-verb-l2")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-hojo-verb-l2")!;
 
   it("leaves 行く alone when standalone (main verb, no preceding て)", () => {
     // 「図書館に行く」 — 行く is a main verb, not preceded by て
@@ -624,7 +773,9 @@ describe("geh-hojo-verb-l2 — false positives (standalone main verbs)", () => {
       { surface: "。", pos: "記号", start: 6, end: 7 },
     ];
     const text = "図書館に行く。";
-    expect((rule() as any).lintWithTokens(text, tokens, CONFIG)).toHaveLength(0);
+    expect((rule() as any).lintWithTokens(text, tokens, CONFIG)).toHaveLength(
+      0,
+    );
   });
 
   it("leaves 来る alone when standalone (main verb, no preceding て)", () => {
@@ -635,34 +786,57 @@ describe("geh-hojo-verb-l2 — false positives (standalone main verbs)", () => {
       { surface: "。", pos: "記号", start: 4, end: 5 },
     ];
     const text = "春が来る。";
-    expect((rule() as any).lintWithTokens(text, tokens, CONFIG)).toHaveLength(0);
+    expect((rule() as any).lintWithTokens(text, tokens, CONFIG)).toHaveLength(
+      0,
+    );
   });
 
   it("leaves いく alone when already kana (no issue)", () => {
     const tokens: ReadonlyArray<Token> = [
       { surface: "増え", pos: "動詞", basic_form: "増える", start: 0, end: 2 },
-      { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start: 2, end: 3 },
+      {
+        surface: "て",
+        pos: "助詞",
+        pos_detail_1: "接続助詞",
+        start: 2,
+        end: 3,
+      },
       { surface: "いく", pos: "動詞", basic_form: "いく", start: 3, end: 5 },
       { surface: "。", pos: "記号", start: 5, end: 6 },
     ];
     const text = "増えていく。";
-    expect((rule() as any).lintWithTokens(text, tokens, CONFIG)).toHaveLength(0);
+    expect((rule() as any).lintWithTokens(text, tokens, CONFIG)).toHaveLength(
+      0,
+    );
   });
 });
 
 describe("geh-hojo-verb-l2 — behavior", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-verb-l2")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-hojo-verb-l2")!;
 
   it("does nothing when disabled", () => {
     const tokens: ReadonlyArray<Token> = [
       { surface: "増え", pos: "動詞", basic_form: "増える", start: 0, end: 2 },
-      { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start: 2, end: 3 },
+      {
+        surface: "て",
+        pos: "助詞",
+        pos_detail_1: "接続助詞",
+        start: 2,
+        end: 3,
+      },
       { surface: "行く", pos: "動詞", basic_form: "行く", start: 3, end: 5 },
       { surface: "。", pos: "記号", start: 5, end: 6 },
     ];
     const text = "増えて行く。";
-    expect((rule() as any).lintWithTokens(text, tokens, { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(
+      (rule() as any).lintWithTokens(text, tokens, {
+        ...CONFIG,
+        enabled: false,
+      }),
+    ).toHaveLength(0);
   });
 });
 
@@ -673,19 +847,27 @@ describe("geh-hojo-verb-l2 — behavior", () => {
 // geh-douin-taishoutaisho — 対照群 should not trigger (正用)
 describe("geh-douin-taishoutaisho — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-douin-taishoutaisho")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-douin-taishoutaisho")!;
 
   it("leaves 対照群 alone (clinical trial terminology)", () => {
     // 「対照群」は実験の比較グループとして正当な専門語
-    expect(rule().lint("プラセボ投与の対照群と比較した。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("プラセボ投与の対照群と比較した。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("leaves 内部対照者 alone (nested lookbehind qualifier)", () => {
-    expect(rule().lint("内部対照者との差異を検定した。", CONFIG)).toHaveLength(0);
+    expect(rule().lint("内部対照者との差異を検定した。", CONFIG)).toHaveLength(
+      0,
+    );
   });
 
   it("flags 支援の対照者 (誤用パターン — 支援対象者 が正しい)", () => {
-    expect(rule().lint("この施策の支援の対照者は高齢者に限定する。", CONFIG).length).toBeGreaterThan(0);
+    expect(
+      rule().lint("この施策の支援の対照者は高齢者に限定する。", CONFIG).length,
+    ).toBeGreaterThan(0);
   });
 });
 
@@ -722,7 +904,9 @@ describe("geh-katakana-trailing-choon — edge cases (additional words)", () => 
 // geh-bangou-range-hyphen — 頁 unit and year-abbreviation patterns
 describe("geh-bangou-range-hyphen — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-bangou-range-hyphen")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-bangou-range-hyphen")!;
 
   it("flags 3-10頁 (頁 is a recognized unit)", () => {
     const issues = rule().lint("3-10頁の内容を読んだ。", CONFIG);
@@ -731,7 +915,9 @@ describe("geh-bangou-range-hyphen — edge cases", () => {
 
   it("leaves 2-D or 3-D alone (no numeric right side followed by unit)", () => {
     // 「2-D」は規格名・略称で数値範囲ではない — 右辺 D は非数字なのでパターン不一致
-    expect(rule().lint("2-Dグラフィックスを使用した。", CONFIG)).toHaveLength(0);
+    expect(rule().lint("2-Dグラフィックスを使用した。", CONFIG)).toHaveLength(
+      0,
+    );
   });
 
   it("leaves plain arithmetic expression alone (no unit word)", () => {
@@ -748,11 +934,15 @@ describe("geh-bangou-range-hyphen — edge cases", () => {
 // geh-gaisuu-arabic — 500余円 should be flagged (book: 「500余円とはしない」)
 describe("geh-gaisuu-arabic — edge cases (boundary conditions)", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-gaisuu-arabic")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-gaisuu-arabic")!;
 
   it("flags 500余円 (the book prohibits this pattern)", () => {
     // 「500余円」は禁止 — 「余り」は許容だが「余」後に別語が続く場合は不可
-    expect(rule().lint("500余円を費やした。", CONFIG).length).toBeGreaterThan(0);
+    expect(rule().lint("500余円を費やした。", CONFIG).length).toBeGreaterThan(
+      0,
+    );
   });
 
   it("leaves 数 alone with no following Arabic digit (false-positive guard)", () => {
@@ -761,21 +951,37 @@ describe("geh-gaisuu-arabic — edge cases (boundary conditions)", () => {
   });
 
   it("flags 何100年 (「何」+ アラビア数字)", () => {
-    expect(rule().lint("何100年も続く伝統だ。", CONFIG).length).toBeGreaterThan(0);
+    expect(rule().lint("何100年も続く伝統だ。", CONFIG).length).toBeGreaterThan(
+      0,
+    );
   });
 });
 
 // geh-hojo-verb-l2 — で (接続助詞) + auxiliary verb detection
 describe("geh-hojo-verb-l2 — edge cases (で接続助詞)", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-hojo-verb-l2")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-hojo-verb-l2")!;
 
   it("flags で貰う (auxiliary 貰う after で)", () => {
     // 「で」接続助詞 + 補助動詞「貰う」も検出対象
     const text = "依頼して貰う。";
     const tokens: ReadonlyArray<Token> = [
-      { surface: "依頼し", pos: "動詞", basic_form: "依頼する", start: 0, end: 3 },
-      { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start: 3, end: 4 },
+      {
+        surface: "依頼し",
+        pos: "動詞",
+        basic_form: "依頼する",
+        start: 0,
+        end: 3,
+      },
+      {
+        surface: "て",
+        pos: "助詞",
+        pos_detail_1: "接続助詞",
+        start: 3,
+        end: 4,
+      },
       { surface: "貰う", pos: "動詞", basic_form: "貰う", start: 4, end: 6 },
       { surface: "。", pos: "記号", start: 6, end: 7 },
     ];
@@ -788,8 +994,20 @@ describe("geh-hojo-verb-l2 — edge cases (で接続助詞)", () => {
     const text = "運んで上げる。";
     const tokens: ReadonlyArray<Token> = [
       { surface: "運ん", pos: "動詞", basic_form: "運ぶ", start: 0, end: 2 },
-      { surface: "で", pos: "助詞", pos_detail_1: "接続助詞", start: 2, end: 3 },
-      { surface: "上げる", pos: "動詞", basic_form: "上げる", start: 3, end: 6 },
+      {
+        surface: "で",
+        pos: "助詞",
+        pos_detail_1: "接続助詞",
+        start: 2,
+        end: 3,
+      },
+      {
+        surface: "上げる",
+        pos: "動詞",
+        basic_form: "上げる",
+        start: 3,
+        end: 6,
+      },
       { surface: "。", pos: "記号", start: 6, end: 7 },
     ];
     const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
@@ -803,7 +1021,13 @@ describe("geh-hojo-verb-l2 — edge cases (で接続助詞)", () => {
     const tokens: ReadonlyArray<Token> = [
       { surface: "段位", pos: "名詞", start: 0, end: 2 },
       { surface: "に", pos: "助詞", pos_detail_1: "格助詞", start: 2, end: 3 },
-      { surface: "上げる", pos: "動詞", basic_form: "上げる", start: 3, end: 6 },
+      {
+        surface: "上げる",
+        pos: "動詞",
+        basic_form: "上げる",
+        start: 3,
+        end: 6,
+      },
       { surface: "。", pos: "記号", start: 6, end: 7 },
     ];
     const issues = (rule() as any).lintWithTokens(text, tokens, CONFIG);
@@ -834,30 +1058,57 @@ function makeKeishikiMeishiTokens(
   if (prefix.length > 0) {
     tokens.push({ surface: prefix, pos: "動詞", start: 0, end: prefixEnd });
   }
-  tokens.push({ surface: nounSurface, pos: "名詞", pos_detail_1: "非自立", start: prefixEnd, end: nounEnd });
+  tokens.push({
+    surface: nounSurface,
+    pos: "名詞",
+    pos_detail_1: "非自立",
+    start: prefixEnd,
+    end: nounEnd,
+  });
   if (suffix.length > 0) {
-    tokens.push({ surface: suffix, pos: "助詞", pos_detail_1: "格助詞", start: nounEnd, end: suffixEnd });
+    tokens.push({
+      surface: suffix,
+      pos: "助詞",
+      pos_detail_1: "格助詞",
+      start: nounEnd,
+      end: suffixEnd,
+    });
   }
   return tokens;
 }
 
 /** Build a token sequence representing a concrete noun (名詞-一般). */
-function makeIpanMeishiTokens(
-  nounSurface: string,
-): ReadonlyArray<Token> {
+function makeIpanMeishiTokens(nounSurface: string): ReadonlyArray<Token> {
   return [
-    { surface: nounSurface, pos: "名詞", pos_detail_1: "一般", start: 0, end: nounSurface.length },
-    { surface: "。", pos: "記号", start: nounSurface.length, end: nounSurface.length + 1 },
+    {
+      surface: nounSurface,
+      pos: "名詞",
+      pos_detail_1: "一般",
+      start: 0,
+      end: nounSurface.length,
+    },
+    {
+      surface: "。",
+      pos: "記号",
+      start: nounSurface.length,
+      end: nounSurface.length + 1,
+    },
   ];
 }
 
 describe("geh-keishiki-meishi-l2 — detections (positive triggers)", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-keishiki-meishi-l2")!;
 
   it("flags 事 as formal noun (名詞-非自立)", () => {
     const tokens = makeKeishikiMeishiTokens("しない", "事", "がある");
-    const issues = (rule() as any).lintWithTokens("しない事がある。", tokens, CONFIG);
+    const issues = (rule() as any).lintWithTokens(
+      "しない事がある。",
+      tokens,
+      CONFIG,
+    );
     expect(issues.length).toBeGreaterThan(0);
     expect(issues[0].fix?.replacement).toBe("こと");
     expect(issues[0].from).toBe("しない".length);
@@ -865,28 +1116,44 @@ describe("geh-keishiki-meishi-l2 — detections (positive triggers)", () => {
 
   it("flags 時 as formal noun (名詞-非自立)", () => {
     const tokens = makeKeishikiMeishiTokens("事故の", "時", "は");
-    const issues = (rule() as any).lintWithTokens("事故の時は。", tokens, CONFIG);
+    const issues = (rule() as any).lintWithTokens(
+      "事故の時は。",
+      tokens,
+      CONFIG,
+    );
     expect(issues.length).toBeGreaterThan(0);
     expect(issues[0].fix?.replacement).toBe("とき");
   });
 
   it("flags 所 as formal noun (名詞-非自立)", () => {
     const tokens = makeKeishikiMeishiTokens("現在の", "所", "差し支えない");
-    const issues = (rule() as any).lintWithTokens("現在の所差し支えない。", tokens, CONFIG);
+    const issues = (rule() as any).lintWithTokens(
+      "現在の所差し支えない。",
+      tokens,
+      CONFIG,
+    );
     expect(issues.length).toBeGreaterThan(0);
     expect(issues[0].fix?.replacement).toBe("ところ");
   });
 
   it("flags 物 as formal noun (名詞-非自立)", () => {
     const tokens = makeKeishikiMeishiTokens("正しい", "物", "と");
-    const issues = (rule() as any).lintWithTokens("正しい物と認める。", tokens, CONFIG);
+    const issues = (rule() as any).lintWithTokens(
+      "正しい物と認める。",
+      tokens,
+      CONFIG,
+    );
     expect(issues.length).toBeGreaterThan(0);
     expect(issues[0].fix?.replacement).toBe("もの");
   });
 
   it("flags 訳 as formal noun (名詞-非自立)", () => {
     const tokens = makeKeishikiMeishiTokens("賛成する", "訳", "には");
-    const issues = (rule() as any).lintWithTokens("賛成する訳には。", tokens, CONFIG);
+    const issues = (rule() as any).lintWithTokens(
+      "賛成する訳には。",
+      tokens,
+      CONFIG,
+    );
     expect(issues.length).toBeGreaterThan(0);
     expect(issues[0].fix?.replacement).toBe("わけ");
   });
@@ -894,7 +1161,9 @@ describe("geh-keishiki-meishi-l2 — detections (positive triggers)", () => {
 
 describe("geh-keishiki-meishi-l2 — false positives (非自立 vs 一般 discrimination)", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-keishiki-meishi-l2")!;
 
   it("leaves 事 alone when tagged as 名詞-一般 (concrete noun)", () => {
     // 「事」単独だが pos_detail_1 が "一般" の場合は実質名詞として除外
@@ -911,7 +1180,11 @@ describe("geh-keishiki-meishi-l2 — false positives (非自立 vs 一般 discri
       { surface: "起きた", pos: "動詞", start: 3, end: 6 },
       { surface: "。", pos: "記号", start: 6, end: 7 },
     ];
-    const issues = (rule() as any).lintWithTokens("事件が起きた。", tokens, CONFIG);
+    const issues = (rule() as any).lintWithTokens(
+      "事件が起きた。",
+      tokens,
+      CONFIG,
+    );
     expect(issues).toHaveLength(0);
   });
 
@@ -922,7 +1195,11 @@ describe("geh-keishiki-meishi-l2 — false positives (非自立 vs 一般 discri
       { surface: "ない", pos: "助動詞", start: 3, end: 5 },
       { surface: "。", pos: "記号", start: 5, end: 6 },
     ];
-    const issues = (rule() as any).lintWithTokens("時間がない。", tokens, CONFIG);
+    const issues = (rule() as any).lintWithTokens(
+      "時間がない。",
+      tokens,
+      CONFIG,
+    );
     expect(issues).toHaveLength(0);
   });
 
@@ -933,7 +1210,11 @@ describe("geh-keishiki-meishi-l2 — false positives (非自立 vs 一般 discri
       { surface: "確認する", pos: "動詞", start: 3, end: 7 },
       { surface: "。", pos: "記号", start: 7, end: 8 },
     ];
-    const issues = (rule() as any).lintWithTokens("場所を確認する。", tokens, CONFIG);
+    const issues = (rule() as any).lintWithTokens(
+      "場所を確認する。",
+      tokens,
+      CONFIG,
+    );
     expect(issues).toHaveLength(0);
   });
 
@@ -944,7 +1225,11 @@ describe("geh-keishiki-meishi-l2 — false positives (非自立 vs 一般 discri
       { surface: "読む", pos: "動詞", start: 3, end: 5 },
       { surface: "。", pos: "記号", start: 5, end: 6 },
     ];
-    const issues = (rule() as any).lintWithTokens("物語を読む。", tokens, CONFIG);
+    const issues = (rule() as any).lintWithTokens(
+      "物語を読む。",
+      tokens,
+      CONFIG,
+    );
     expect(issues).toHaveLength(0);
   });
 
@@ -952,23 +1237,38 @@ describe("geh-keishiki-meishi-l2 — false positives (非自立 vs 一般 discri
     const tokens: ReadonlyArray<Token> = [
       { surface: "し", pos: "動詞", start: 0, end: 1 },
       { surface: "ない", pos: "助動詞", start: 1, end: 3 },
-      { surface: "こと", pos: "名詞", pos_detail_1: "非自立", start: 3, end: 5 },
+      {
+        surface: "こと",
+        pos: "名詞",
+        pos_detail_1: "非自立",
+        start: 3,
+        end: 5,
+      },
       { surface: "が", pos: "助詞", pos_detail_1: "格助詞", start: 5, end: 6 },
       { surface: "ある", pos: "動詞", start: 6, end: 8 },
       { surface: "。", pos: "記号", start: 8, end: 9 },
     ];
-    const issues = (rule() as any).lintWithTokens("しないことがある。", tokens, CONFIG);
+    const issues = (rule() as any).lintWithTokens(
+      "しないことがある。",
+      tokens,
+      CONFIG,
+    );
     expect(issues).toHaveLength(0);
   });
 });
 
 describe("geh-keishiki-meishi-l2 — behavior", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-keishiki-meishi-l2")!;
 
   it("does nothing when disabled", () => {
     const tokens = makeKeishikiMeishiTokens("しない", "事", "がある");
-    const issues = (rule() as any).lintWithTokens("しない事がある。", tokens, { ...CONFIG, enabled: false });
+    const issues = (rule() as any).lintWithTokens("しない事がある。", tokens, {
+      ...CONFIG,
+      enabled: false,
+    });
     expect(issues).toHaveLength(0);
   });
 
@@ -983,7 +1283,13 @@ describe("geh-keishiki-meishi-l2 — behavior", () => {
       { surface: "時", pos: "名詞", pos_detail_1: "非自立", start: 7, end: 8 },
       { surface: "に", pos: "助詞", pos_detail_1: "格助詞", start: 8, end: 9 },
       { surface: "解決する", pos: "動詞", start: 9, end: 13 },
-      { surface: "訳", pos: "名詞", pos_detail_1: "非自立", start: 13, end: 14 },
+      {
+        surface: "訳",
+        pos: "名詞",
+        pos_detail_1: "非自立",
+        start: 13,
+        end: 14,
+      },
       { surface: "だ", pos: "助動詞", start: 14, end: 15 },
       { surface: "。", pos: "記号", start: 15, end: 16 },
     ];
@@ -1027,7 +1333,9 @@ describe("geh-nijuu-bracket-mismatch — edge cases", () => {
 
 describe("geh-keishiki-meishi-l2 — detections (非自立)", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-keishiki-meishi-l2")!;
 
   const FORMAL: ReadonlyArray<[string, string]> = [
     ["事", "こと"],
@@ -1041,7 +1349,13 @@ describe("geh-keishiki-meishi-l2 — detections (非自立)", () => {
     it(`flags 非自立 「${kanji}」 → 「${kana}」`, () => {
       const tokens: ReadonlyArray<Token> = [
         { surface: "する", pos: "動詞", basic_form: "する", start: 0, end: 2 },
-        { surface: kanji, pos: "名詞", pos_detail_1: "非自立", start: 2, end: 2 + kanji.length },
+        {
+          surface: kanji,
+          pos: "名詞",
+          pos_detail_1: "非自立",
+          start: 2,
+          end: 2 + kanji.length,
+        },
         {
           surface: "が",
           pos: "助詞",
@@ -1050,7 +1364,11 @@ describe("geh-keishiki-meishi-l2 — detections (非自立)", () => {
           end: 3 + kanji.length,
         },
       ];
-      const issues = (rule() as any).lintWithTokens(`する${kanji}が`, tokens, CONFIG);
+      const issues = (rule() as any).lintWithTokens(
+        `する${kanji}が`,
+        tokens,
+        CONFIG,
+      );
       expect(issues.length).toBeGreaterThan(0);
       expect(issues[0].fix?.replacement).toBe(kana);
     });
@@ -1059,21 +1377,37 @@ describe("geh-keishiki-meishi-l2 — detections (非自立)", () => {
 
 describe("geh-keishiki-meishi-l2 — false positives (一般/複合語)", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-keishiki-meishi-l2")!;
 
   it("does NOT flag 具体名詞用法の「事」(一般)", () => {
     const tokens: ReadonlyArray<Token> = [
       { surface: "事", pos: "名詞", pos_detail_1: "一般", start: 0, end: 1 },
       { surface: "を", pos: "助詞", pos_detail_1: "格助詞", start: 1, end: 2 },
-      { surface: "起こす", pos: "動詞", basic_form: "起こす", start: 2, end: 5 },
+      {
+        surface: "起こす",
+        pos: "動詞",
+        basic_form: "起こす",
+        start: 2,
+        end: 5,
+      },
     ];
-    expect((rule() as any).lintWithTokens("事を起こす", tokens, CONFIG)).toHaveLength(0);
+    expect(
+      (rule() as any).lintWithTokens("事を起こす", tokens, CONFIG),
+    ).toHaveLength(0);
   });
 
   it("does NOT flag 複合語 事件/時間/場所/物語 (一般)", () => {
     for (const w of ["事件", "時間", "場所", "物語"]) {
       const tokens: ReadonlyArray<Token> = [
-        { surface: w, pos: "名詞", pos_detail_1: "一般", start: 0, end: w.length },
+        {
+          surface: w,
+          pos: "名詞",
+          pos_detail_1: "一般",
+          start: 0,
+          end: w.length,
+        },
       ];
       expect((rule() as any).lintWithTokens(w, tokens, CONFIG)).toHaveLength(0);
     }
@@ -1081,15 +1415,25 @@ describe("geh-keishiki-meishi-l2 — false positives (一般/複合語)", () => 
 
   it("does NOT flag already-kana こと", () => {
     const tokens: ReadonlyArray<Token> = [
-      { surface: "こと", pos: "名詞", pos_detail_1: "非自立", start: 0, end: 2 },
+      {
+        surface: "こと",
+        pos: "名詞",
+        pos_detail_1: "非自立",
+        start: 0,
+        end: 2,
+      },
     ];
-    expect((rule() as any).lintWithTokens("こと", tokens, CONFIG)).toHaveLength(0);
+    expect((rule() as any).lintWithTokens("こと", tokens, CONFIG)).toHaveLength(
+      0,
+    );
   });
 });
 
 describe("geh-keishiki-meishi-l2 — behavior", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "geh-keishiki-meishi-l2")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "geh-keishiki-meishi-l2")!;
 
   it("lint() returns [] (L2 は lintWithTokens 経由)", () => {
     expect((rule() as any).lint("する事がある", CONFIG)).toHaveLength(0);
@@ -1100,7 +1444,10 @@ describe("geh-keishiki-meishi-l2 — behavior", () => {
       { surface: "事", pos: "名詞", pos_detail_1: "非自立", start: 0, end: 1 },
     ];
     expect(
-      (rule() as any).lintWithTokens("事", tokens, { ...CONFIG, enabled: false }),
+      (rule() as any).lintWithTokens("事", tokens, {
+        ...CONFIG,
+        enabled: false,
+      }),
     ).toHaveLength(0);
   });
 });
